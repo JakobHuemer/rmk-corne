@@ -1,0 +1,97 @@
+[keyboard]
+name = "rmk-corne"
+product_name = "rmk-corne"
+vendor_id = 0x4c4b
+product_id = 0x4643
+manufacturer = "RMK"
+chip = "nrf52840"
+# board = "nice!nano_v2"
+
+
+[layout]
+# WARNING: Currently row2col/col2row is set in RMK's feature gate, row2col config here is valid ONLY when you're using cloud compilation.
+# Checkout doc here: https://rmk.rs/docs/user_guide/faq.html#my-matrix-is-row2col-the-matrix-doesn-t-work
+# row2col = true
+rows = 4
+cols = 6
+layers = 2
+keymap = [
+  [
+    ["A", "A", "B", "C", "D", "E"],
+    ["A", "F", "G", "H", "I", "J"],
+    ["A", "K", "L", "M", "N", "O"],
+    ["A", "P", "Q", "R", "S", "T"],
+  ],
+  [
+    ["A", "U", "V", "W", "X", "Y"],
+    ["A", "Z", "1", "2", "3", "4"],
+    ["A", "5", "6", "7", "8", "9"],
+    ["A", "0", "-", "=", "[", "]"],
+  ],
+]
+
+# matrix_map = """
+#     ... the mapping between the "electronic matrix" of your keyboard
+#         and your key map configuration is described here ...
+#         https://rmk.rs/docs/features/configuration/layout.html#keyboard-layout-configuration
+# """
+# matrix_map = """
+#     (0,0) (0,1) (0,2) (0,3) (0,4)  (0,5) (0,6) (0,7) (0,8) (0,9) (0,10)
+#     (1,0) (1,1) (1,2) (1,3) (1,4)  (1,5) (1,6) (1,7) (1,8) (1,9) (1,10)
+#     (2,0) (2,1) (2,2) (2,3) (2,4)  (2,5) (2,6) (2,7) (2,8) (2,9) (2,10)
+#                 (3,0) (3,1) (3,2)  (3,3) (3,4) (3,5)
+# """
+
+[ble]
+enabled = true
+
+[storage]
+enabled = true
+# Storage starts from 640K
+start_addr = 0xA0000
+# Storage uses 128K = 640K ~ 768K
+num_sectors = 32
+clear_storage = false
+
+[behavior]
+tap_hold = { enable_hrm = true }
+
+[split]
+connection = "ble"
+
+[split.central]
+rows = 4
+cols = 6
+row_offset = 0
+col_offset = 0
+
+[split.central.matrix]
+# input_pins = ["P1_04", "P1_06"]
+# output_pins = ["P0_02", "P1_15"]
+# matrix_type = "normal"
+output_pins = ["P0_31", "P0_29", "P0_02", "P1_15", "P1_13", "P1_11"]
+input_pins = ["P0_22", "P0_24", "P1_00", "P0_11"]
+# input_pins = ["P0_12", "P0_13"]
+# output_pins = ["P0_14", "P0_15"]
+
+[[split.peripheral]]
+rows = 4
+cols = 6
+row_offset = 0
+col_offset = 0
+
+[split.peripheral.matrix]
+# input_pins = ["P1_04", "P1_06"]
+# output_pins = ["P0_02"]
+# matrix_type = "normal"
+output_pins = ["P1_11", "P1_13", "P1_15", "P0_02", "P0_29", "P0_31"]
+input_pins = ["P0_22", "P0_24", "P1_00", "P0_11"]
+
+# [[split.peripheral]]
+# rows = 2
+# cols = 1
+# row_offset = 2
+# col_offset = 2
+# serial = [{ instance = "UART0", tx_pin = "PIN_0", rx_pin = "PIN_1" }]
+# input_pins = ["PIN_9", "PIN_11"]
+# output_pins = ["PIN_10"]
