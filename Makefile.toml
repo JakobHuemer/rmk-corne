@@ -81,3 +81,20 @@ dependencies = ["objcopy-peripheral"]
 
 [tasks.uf2]
 dependencies = ["uf2-central", "uf2-peripheral"]
+
+[tasks.uf2-move]
+script = [
+  "GREEN='\\033[0;32m'",
+  "RED='\\033[0;31m'",
+  "ORANGE='\\033[38;5;208m'",
+  "RESET='\\033[0m'",
+  "if [ \"$1\" = \"-c\" ]; then",
+  "  rsync -a --info=progress2 \"rmk-corne-central.uf2\" \"/run/media/${USER}/NICENANO/CURRENT.UF2\" && echo -e \"${GREEN}Successfully synced central.uf2${RESET}\" || echo -e \"${RED}Failed to sync central.uf2${RESET}\"",
+  "elif [ \"$1\" = \"-p\" ]; then",
+  "  rsync -a --info=progress2 \"rmk-corne-peripheral.uf2\" \"/run/media/${USER}/NICENANO/CURRENT.UF2\" && echo -e \"${GREEN}Successfully synced peripheral.uf2${RESET}\" || echo -e \"${RED}Failed to sync peripheral.uf2${RESET}\"",
+  "else",
+  "  echo -e \"${ORANGE}Warning: no -c or -p flag passed; skipping rsync${RESET}\"",
+  "fi"
+]
+dependencies = ["uf2"]
+
