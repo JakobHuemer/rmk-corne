@@ -1,0 +1,95 @@
+[tasks.install-llvm-tools]
+install_crate = { rustup_component_name = "llvm-tools" }
+
+[tasks.flip-link]
+install_crate = { crate_name = "flip-link", binary = "flip-link", test_arg = ["-h"] }
+
+[tasks.objcopy-central]
+install_crate = { crate_name = "cargo-binutils", binary = "cargo", test_arg = [
+    "objcopy",
+    "--help",
+] }
+command = "cargo"
+args = [
+    "objcopy",
+    "--release",
+    "--bin",
+    "central",
+    "--",
+    "-O",
+    "ihex",
+    "rmk-corne-central.hex",
+]
+dependencies = ["install-llvm-tools", "flip-link"]
+
+[tasks.objcopy-peripheral]
+install_crate = { crate_name = "cargo-binutils", binary = "cargo", test_arg = [
+    "objcopy",
+    "--help",
+] }
+command = "cargo"
+args = [
+    "objcopy",
+    "--release",
+    "--bin",
+    "peripheral",
+    "--",
+    "-O",
+    "ihex",
+    "rmk-corne-peripheral.hex",
+]
+dependencies = ["install-llvm-tools", "flip-link"]
+
+[tasks.uf2-central]
+install_crate = { crate_name = "cargo-hex-to-uf2", binary = "cargo", test_arg = [
+    "hex-to-uf2",
+    "--help",
+] }
+command = "cargo"
+args = [
+    "hex-to-uf2",
+    "--input-path",
+    "rmk-corne-central.hex",
+    "--output-path",
+    "rmk-corne-central.uf2",
+    "--family",
+    "nrf52840",
+]
+dependencies = ["objcopy-central"]
+
+[tasks.uf2-peripheral]
+install_crate = { crate_name = "cargo-hex-to-uf2", binary = "cargo", test_arg = [
+    "hex-to-uf2",
+    "--help",
+] }
+command = "cargo"
+args = [
+    "hex-to-uf2",
+    "--input-path",
+    "rmk-corne-peripheral.hex",
+    "--output-path",
+    "rmk-corne-peripheral.uf2",
+    "--family",
+    "nrf52840",
+]
+dependencies = ["objcopy-peripheral"]
+
+[tasks.uf2]
+dependencies = ["uf2-central", "uf2-peripheral"]
+
+
+[tasks.uf2-move]
+script = [
+  "GREEN='\\033[0;32m'",
+  "RED='\\033[0;31m'",
+  "ORANGE='\\033[38;5;208m'",
+  "RESET='\\033[0m'",
+  "if [ \"$1\" = \"-c\" ]; then",
+  "  rsync -a --info=progress2 \"rmk-corne-central.uf2\" \"/run/media/${USER}/NICENANO/CURRENT.UF2\" && echo -e \"${GREEN}Successfully synced central.uf2${RESET}\" || echo -e \"${RED}Failed to sync central.uf2${RESET}\"",
+  "elif [ \"$1\" = \"-p\" ]; then",
+  "  rsync -a --info=progress2 \"rmk-corne-peripheral.uf2\" \"/run/media/${USER}/NICENANO/CURRENT.UF2\" && echo -e \"${GREEN}Successfully synced peripheral.uf2${RESET}\" || echo -e \"${RED}Failed to sync peripheral.uf2${RESET}\"",
+  "else",
+  "  echo -e \"${ORANGE}Warning: no -c or -p flag passed; skipping rsync${RESET}\"",
+  "fi"
+]
+dependencies = ["uf2"]
